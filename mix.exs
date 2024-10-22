@@ -19,6 +19,8 @@ defmodule TeslaMiddlewareThrottle.MixProject do
   end
 
   defp deps do
-    []
+    [
+      {:decimal, "~> 2.1"}
+    ]
   end
 end
