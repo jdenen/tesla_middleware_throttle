@@ -7,7 +7,8 @@ defmodule Tesla.Middleware.Throttle.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      {Registry, name: Throttle.Registry, keys: :unique}
+      {Registry, name: Throttle.Registry, keys: :unique},
+      {DynamicSupervisor, name: Throttle.DynSup}
     ]
 
     opts = [strategy: :one_for_one, name: TeslaMiddlewareThrottle.Supervisor]
