@@ -10,8 +10,7 @@ defmodule Tesla.Middleware.Throttle.Server do
 
   @spec start_link(Keyword.t()) :: GenServer.on_start()
   def start_link(opts) do
-    name = Keyword.get(opts, :name, __MODULE__)
-    GenServer.start_link(__MODULE__, opts, name: via(name))
+    GenServer.start_link(__MODULE__, opts, name: via(opts))
   end
 
   @spec child_spec(Keyword.t()) :: Supervisor.child_spec()
@@ -66,7 +65,9 @@ defmodule Tesla.Middleware.Throttle.Server do
 
   defp get_ms(_value, _window), do: 0
 
-  defp via(name) do
-    {:via, Registry, {Throttle.Registry, name}}
+  defp via(opts) do
+    name = Keyword.get(opts, :name, __MODULE__)
+    registry = Keyword.get(opts, :registry, Throttle.Registry)
+    {:via, Registry, {registry, name}}
   end
 end

@@ -25,12 +25,27 @@ defmodule Tesla.Middleware.ThrottleTest do
     test "starts server if not already started" do
       start_supervised({DynamicSupervisor, name: TestSup})
 
-      throttle = {Throttle, name: Test, supervisor: TestSup, window: {2, 1_000}}
+      throttle = {Throttle, name: SupTest, supervisor: TestSup, window: {2, 1_000}}
       client = Tesla.client([{Tesla.Middleware.BaseUrl, ""}, throttle], TeslaMock)
 
       assert {:ok, _} = Tesla.get(client, "/url")
 
-      assert [{pid, _}] = Registry.lookup(Throttle.Registry, Test)
+      assert [{pid, _}] = Registry.lookup(Throttle.Registry, SupTest)
+      assert Process.alive?(pid)
+    end
+
+    test "registers server with specified registry" do
+      start_supervised({Registry, name: TestReg, keys: :unique})
+      start_supervised({DynamicSupervisor, name: TestSup})
+
+      throttle =
+        {Throttle, name: RegTest, registry: TestReg, supervisor: TestSup, window: {2, 1_000}}
+
+      client = Tesla.client([{Tesla.Middleware.BaseUrl, ""}, throttle], TeslaMock)
+
+      assert {:ok, _} = Tesla.get(client, "/url")
+
+      assert [{pid, _}] = Registry.lookup(TestReg, RegTest)
       assert Process.alive?(pid)
     end
 
