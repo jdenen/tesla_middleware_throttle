@@ -1,4 +1,4 @@
-# TeslaMiddlewareThrottle
+# Tesla.Middleware.Throttle
 
 **TODO: Add description**
 
